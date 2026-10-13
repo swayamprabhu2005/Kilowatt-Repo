@@ -27,6 +27,11 @@ export const OverviewPage: React.FC = () => {
     refetchInterval: 10000,
   });
 
+  const { data: wooStatus } = useQuery({
+    queryKey: ['woo-status'],
+    queryFn: () => apiFetch<any>('/integrations/woocommerce/status'),
+  });
+
   const metrics = data?.metrics || {
     totalProducts: 0,
     publishedProducts: 0,
@@ -47,6 +52,41 @@ export const OverviewPage: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-enter">
+      {/* Priority Credential Locking Banner for New Workspaces in Live Mode */}
+      {wooStatus?.isNewWorkspace && !wooStatus?.isLocked && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-5 rounded-2xl bg-gradient-to-r from-terracotta-50 via-amber-50/50 to-surface-card border-2 border-terracotta-300 shadow-warm-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        >
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-terracotta-500 to-terracotta-700 text-white flex items-center justify-center shrink-0 shadow-warm">
+              <Store className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-ink">Step 1: Lock WooCommerce Store Credentials</h3>
+                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-mono font-semibold bg-emerald-100 text-emerald-800">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  Live Store Mode
+                </span>
+              </div>
+              <p className="text-xs text-ink-secondary mt-0.5 max-w-xl">
+                Your workspace is live! Configure and securely lock your store URL and REST API keys to activate bi-directional catalogue synchronisation.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate('/woocommerce')}
+            className="shrink-0 shadow-warm"
+          >
+            <span>Lock Credentials →</span>
+          </Button>
+        </motion.div>
+      )}
+
       {/* Welcome Hero Banner with Subtle Warm Radial Gradient */}
       <div className="p-6 rounded-2xl bg-gradient-to-r from-terracotta-50/80 via-[#FDF5F0] to-amber-50/40 border border-terracotta-200/70 shadow-warm relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-l from-terracotta-500/10 to-transparent pointer-events-none" />
