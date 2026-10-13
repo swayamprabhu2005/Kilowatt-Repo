@@ -4,7 +4,7 @@ title Orivanta PIM — Production-Grade Product Information Management
 
 echo ===============================================================================
 echo   ORIVANTA PIM — PRODUCT INFORMATION MANAGEMENT PLATFORM
-echo   Integrated with WooCommerce & Gemini-Powered Agentic AI
+echo   Integrated with WooCommerce and Gemini-Powered Agentic AI
 echo ===============================================================================
 echo.
 
@@ -37,7 +37,7 @@ echo   -------------------------------------------------------------------------
 echo   - Backend API:       http://localhost:5000/api
 echo   - Frontend UI:       http://localhost:3000
 echo   - Database:          Local SQLite (./data/orivanta.sqlite)
-echo   - Integration Mode:  Deterministic Mock WooCommerce (Zero Credentials)
+echo   - Integration Mode:  Configured via .env (Live WooCommerce / Mock)
 echo   - Demo Admin Login:  demo@orivanta.local / OrivantaDemo2026!
 echo   -------------------------------------------------------------------------
 echo.

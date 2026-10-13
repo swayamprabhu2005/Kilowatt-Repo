@@ -16,12 +16,10 @@
 9. [WooCommerce Integration & Mock Mode](#9-woocommerce-integration--mock-mode)
 10. [Gemini-Powered Agentic AI](#10-gemini-powered-agentic-ai)
 11. [Security Model & Application-Layer Multi-Tenancy](#11-security-model--application-layer-multi-tenancy)
-12. [Testing Strategy & Test Results](#12-testing-strategy--test-results)
-13. [Project Structure](#13-project-structure)
-14. [Architecture Decision Records (ADRs)](#14-architecture-decision-records-adrs)
-15. [Documentation Suite](#15-documentation-suite)
-16. [Screenshot Capture Checklist](#16-screenshot-capture-checklist)
-17. [Troubleshooting](#17-troubleshooting)
+12. [Project Structure](#12-project-structure)
+13. [Architecture Decision Records (ADRs)](#13-architecture-decision-records-adrs)
+14. [Documentation Suite](#14-documentation-suite)
+15. [Testing Strategy & Test Results](#15-testing-strategy--test-results)
 
 ---
 
@@ -44,7 +42,7 @@ Designed for ₹0-budget hackathon evaluations and developer onboarding, Orivant
 - **Gemini-Powered Agentic AI**: Server-side bounded tool loop (`AI_MAX_TOOL_STEPS=6`) executing read-only tools to audit completeness, draft enrichments with field-level diffs, and diagnose channel errors.
 - **Human Approval Boundary**: AI is strictly advisory; committing changes to the database requires explicit operator confirmation in the UI.
 - **Application-Layer Tenant Isolation**: Context-enforced repository scoping ensuring complete data segregation between workspaces without relying on database-level RLS.
-- **Warm Editorial Aesthetic**: Distinctive **Terracotta & Warm Ivory** palette (strictly non-blue and non-green) applying **Emil Kowalski's design-engineering principles**.
+- **Warm Editorial Aesthetic**: Distinctive **Terracotta & Warm Ivory** palette (strictly non-blue and non-green) applying tactile and responsive design-engineering principles.
 
 ---
 
@@ -122,7 +120,7 @@ Orivanta PIM strictly avoids standard blue/green templates, opting for a warm ed
 - **Accent**: Rich Terracotta (`#C85A32`), Hover (`#B54D28`), Active (`#9E3F1D`).
 - **Status Badges**: High-contrast stone neutrals with descriptive text (never relying on color alone).
 
-### Emil Kowalski Design Engineering Principles Applied
+### Tactile & Editorial Design Principles Applied
 1. **Responsive Active Press**: Buttons scale to `scale(0.97)` on `:active` with `140ms ease-out` for tactile feedback.
 2. **Never Animate from scale(0)**: Dialogs and drawers enter from `scale(0.96)` with opacity for natural physical presence.
 3. **Sub-300ms Durations**: Interactive animations stay strictly under 250ms with custom cubic-bezier curves (`cubic-bezier(0.23, 1, 0.32, 1)`).
@@ -186,6 +184,7 @@ cp .env.example .env
 | `PORT` | Yes | `5000` | No | Backend Express API port. |
 | `DATABASE_PATH` | Yes | `./data/orivanta.sqlite` | No | Local SQLite database file path. |
 | `SESSION_SECRET` | Yes | (32+ chars) | **Yes** | Server session signing secret. |
+| `JWT_SECRET` | No | (32+ chars) | **Yes** | Optional secret key for stateless tokens (commented out in favor of SQLite session persistence). |
 | `COOKIE_SECURE` | No | `false` | No | Set to `true` in production with HTTPS. |
 | `INTEGRATION_MODE` | Yes | `mock` | No | `'mock'` for local evaluation, `'woocommerce'` for live store. |
 | `WOOCOMMERCE_STORE_URL` | No | `https://mock.orivanta.local` | No | Target WooCommerce store URL. |
@@ -211,9 +210,10 @@ The database seed initializes two isolated workspaces to demonstrate multi-tenan
 | `demo@orivanta.local` | `OrivantaDemo2026!` | `ws_default` (Orivanta Demo Workspace) | Owner |
 | `other@tenant2.local` | `OrivantaDemo2026!` | `ws_isolated` (Isolated Workspace B) | Owner |
 
-### SQLite Persistence & Reset
+### SQLite Persistence & Authentication State
 - Database is stored locally at `./data/orivanta.sqlite`.
 - Persists across restarts without hosted database accounts.
+- **Active Session Persistence**: User login creates a secure session token stored directly in the local SQLite database (`sessions` table) with exactly 1 entry per active session. Stateless JSON Web Tokens (JWT) are kept commented out in the backend auth service, ensuring the local database remains the single source of truth for session lifecycles and immediate revocation.
 - To safely reset the catalogue and reload sample data:
   ```bash
   npm run db:reset
@@ -266,42 +266,7 @@ SQLite does not provide PostgreSQL-style Row Level Security (RLS). Orivanta PIM 
 
 ---
 
-## 12. Testing Strategy & Test Results
-
-The automated test suite runs via **Vitest** and **Supertest** without external credentials or network requests.
-
-### Latest Test Results (Verified)
-```text
- ✓ tests/pim.test.ts (16 tests) 1235ms
-   ✓ 1. Authentication & Tenant Isolation (Application Layer) > rejects unauthenticated requests to protected routes
-   ✓ 1. Authentication & Tenant Isolation (Application Layer) > rejects cross-tenant access to another workspace products
-   ✓ 1. Authentication & Tenant Isolation (Application Layer) > rejects cross-tenant header spoofing when user is not a member
-   ✓ 2. Dynamic Attribute Engine & Schema Validation > lists workspace dynamic attribute definitions
-   ✓ 2. Dynamic Attribute Engine & Schema Validation > creates a custom attribute definition and enforces unique code within workspace
-   ✓ 3. Product Catalogue Management > creates a new simple product with dynamic attributes and categories
-   ✓ 3. Product Catalogue Management > enforces SKU uniqueness within workspace
-   ✓ 3. Product Catalogue Management > duplicates a product with a unique copy SKU and not_synced status
-   ✓ 4. Product Variants & Matrix > creates variants and prevents duplicate attribute combinations
-   ✓ 5. WooCommerce Integration & Idempotent Synchronization > tests connection in mock mode successfully
-   ✓ 5. WooCommerce Integration & Idempotent Synchronization > synchronizes a validated product to WooCommerce mock store
-   ✓ 5. WooCommerce Integration & Idempotent Synchronization > blocks synchronisation when mandatory validation fails
-   ✓ 5. WooCommerce Integration & Idempotent Synchronization > simulates a sync failure and successfully retries idempotently
-   ✓ 6. Gemini Agentic AI Assistant & Tool Registry > executes server-controlled agent tools with Zod validation
-   ✓ 6. Gemini Agentic AI Assistant & Tool Registry > runs product completeness audit with structured checklist and tool traces
-   ✓ 6. Gemini Agentic AI Assistant & Tool Registry > drafts product enrichment proposal with field diff without mutating DB
-
- Test Files  1 passed (1)
-      Tests  16 passed (16)
-```
-
-Run tests with:
-```bash
-npm test
-```
-
----
-
-## 13. Project Structure
+## 12. Project Structure
 
 ```text
 orivanta-pim/
@@ -315,13 +280,13 @@ orivanta-pim/
 │   │   ├── pages/                     # Feature pages (Overview, Products, Editor, etc.)
 │   │   ├── App.tsx                    # Route definitions
 │   │   ├── main.tsx                   # React 18 bootstrap
-│   │   └── index.css                  # Emil Kowalski easing & active press rules
+│   │   └── index.css                  # Tactile easing & active press rules
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── vite.config.ts
 ├── backend/
 │   ├── src/
-│   │   ├── db/                        # schema.ts, index.ts, migrate.ts, seed.ts
+│   │   ├── db/                        # schema.ts, index.ts, migrate.ts, seed.ts, seed-woocommerce.ts
 │   │   ├── integrations/woocommerce/  # woo-client, woo-mock-adapter, woo-mapper
 │   │   ├── middleware/                # auth.ts, tenant.ts, logger.ts, error-handler.ts
 │   │   ├── modules/
@@ -358,7 +323,7 @@ orivanta-pim/
 
 ---
 
-## 14. Architecture Decision Records (ADRs)
+## 13. Architecture Decision Records (ADRs)
 
 | ADR ID | Decision Title | Status |
 | :--- | :--- | :--- |
@@ -374,7 +339,7 @@ orivanta-pim/
 
 ---
 
-## 15. Documentation Suite
+## 14. Documentation Suite
 
 - [`docs/PRODUCT_REQUIREMENTS.md`](file:///d:/MyFiles/Kilowatt-Repo/docs/PRODUCT_REQUIREMENTS.md) — Comprehensive product requirements specification.
 - [`docs/ARCHITECTURE.md`](file:///d:/MyFiles/Kilowatt-Repo/docs/ARCHITECTURE.md) — Component interactions, data flow, and sequence diagrams.
@@ -387,30 +352,35 @@ orivanta-pim/
 
 ---
 
-## 16. Screenshot Capture Checklist
+## 15. Testing Strategy & Test Results
 
-When deploying to GitHub, capture screenshots of the following live screens:
-- [ ] **Overview Dashboard**: Displaying product metrics, recent updates, and recent sync activity.
-- [ ] **Product Catalogue**: Showing search, faceted filters, and the catalogue table.
-- [ ] **Product Editor (Dynamic Attributes)**: Showing dynamic attribute form inputs rendered from definitions.
-- [ ] **Variant Matrix**: Showing multi-attribute variant combinations for variable products.
-- [ ] **AI Completeness Audit**: Showing the prioritised audit checklist and tool execution trace modal.
-- [ ] **AI-Assisted Enrichment**: Showing the field-level diff preview with checkable approvals.
-- [ ] **Sync Center**: Showing real-time job monitoring, external IDs, and retry actions.
+The automated test suite runs via **Vitest** and **Supertest** without external credentials or network requests.
 
----
+### Latest Test Results (Verified)
+```text
+ ✓ tests/pim.test.ts (16 tests) 1235ms
+   ✓ 1. Authentication & Tenant Isolation (Application Layer) > rejects unauthenticated requests to protected routes
+   ✓ 1. Authentication & Tenant Isolation (Application Layer) > rejects cross-tenant access to another workspace products
+   ✓ 1. Authentication & Tenant Isolation (Application Layer) > rejects cross-tenant header spoofing when user is not a member
+   ✓ 2. Dynamic Attribute Engine & Schema Validation > lists workspace dynamic attribute definitions
+   ✓ 2. Dynamic Attribute Engine & Schema Validation > creates a custom attribute definition and enforces unique code within workspace
+   ✓ 3. Product Catalogue Management > creates a new simple product with dynamic attributes and categories
+   ✓ 3. Product Catalogue Management > enforces SKU uniqueness within workspace
+   ✓ 3. Product Catalogue Management > duplicates a product with a unique copy SKU and not_synced status
+   ✓ 4. Product Variants & Matrix > creates variants and prevents duplicate attribute combinations
+   ✓ 5. WooCommerce Integration & Idempotent Synchronization > tests connection in mock mode successfully
+   ✓ 5. WooCommerce Integration & Idempotent Synchronization > synchronizes a validated product to WooCommerce mock store
+   ✓ 5. WooCommerce Integration & Idempotent Synchronization > blocks synchronisation when mandatory validation fails
+   ✓ 5. WooCommerce Integration & Idempotent Synchronization > simulates a sync failure and successfully retries idempotently
+   ✓ 6. Gemini Agentic AI Assistant & Tool Registry > executes server-controlled agent tools with Zod validation
+   ✓ 6. Gemini Agentic AI Assistant & Tool Registry > runs product completeness audit with structured checklist and tool traces
+   ✓ 6. Gemini Agentic AI Assistant & Tool Registry > drafts product enrichment proposal with field diff without mutating DB
 
-## 17. Troubleshooting
-
-### Port 5000 or 3000 in use
-If port 5000 is occupied, set `PORT=5001` in `.env` and update the proxy target in `frontend/vite.config.ts`.
-
-### Database Reset
-To restore sample catalogue items and start fresh:
-```bash
-npm run db:reset
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
 ```
 
-### Live WooCommerce Connection Errors
-- Verify that your WordPress site supports HTTPS. Plain HTTP is rejected for remote hosts to protect credentials.
-- Verify that the REST API key has both **Read and Write** permissions.
+Run tests with:
+```bash
+npm test
+```

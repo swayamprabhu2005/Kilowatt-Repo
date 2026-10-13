@@ -17,8 +17,13 @@ export class WooClient implements WooAdapterInterface {
     const secret = process.env.WOOCOMMERCE_CONSUMER_SECRET || '';
 
     // Enforce HTTPS for live remote stores to protect secrets
-    if (this.baseUrl && !this.baseUrl.startsWith('https://') && !this.baseUrl.includes('localhost')) {
+    if (this.baseUrl && !this.baseUrl.startsWith('https://') && !this.baseUrl.includes('localhost') && !this.baseUrl.includes('.local')) {
       console.warn('[WooCommerce Client Warning] Store URL is not HTTPS. HTTPS is required for secure authentication.');
+    }
+
+    // For local evaluation environments with self-signed certificates (.local / localhost), allow development TLS
+    if (this.baseUrl.includes('.local') || this.baseUrl.includes('localhost')) {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     }
 
     this.authHeader = 'Basic ' + Buffer.from(`${key}:${secret}`).toString('base64');

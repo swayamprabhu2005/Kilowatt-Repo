@@ -35,7 +35,17 @@ export class AuthService {
       throw { statusCode: 403, code: 'NO_WORKSPACE', message: 'User is not assigned to any workspace.' };
     }
 
-    // Generate secure session token
+    // =========================================================================
+    // OPTIONAL: JSON Web Token (JWT) Live Login Pattern
+    // (Commented out in favor of SQLite database-persisted sessions; only 1 entry
+    // per active session is stored in the database for instant revocation safety)
+    // =========================================================================
+    // const jwtSecret = process.env.JWT_SECRET || 'dev_jwt_secret_key_for_optional_stateless_tokens_32_characters_minimum';
+    // const jwtPayload = { userId: user.id, email: user.email, workspaceId: memberRow.workspace_id };
+    // const jwtToken = jwt.sign(jwtPayload, jwtSecret, { expiresIn: '7d' });
+    // =========================================================================
+
+    // Generate secure session token and persist directly to database
     const sessionToken = crypto.randomBytes(32).toString('hex');
     const now = Date.now();
     const expiresAt = now + SESSION_TTL_MS;
