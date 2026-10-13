@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Emil Kowalski Custom Easing Curves */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #181615;
+  background-color: #FAF8F6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Emil Kowalski Principle: Buttons must feel responsive to press */
+button:active:not(:disabled),
+a[role="button"]:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 140ms var(--ease-out);
+}
+
+/* Emil Kowalski Principle: Never animate from scale(0). Start from scale(0.95) with opacity */
+@keyframes warm-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-enter {
+  animation: warm-enter 200ms var(--ease-out) forwards;
+}
+
+/* Custom Warm Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF8F6;
+}
+::-webkit-scrollbar-thumb {
+  background: #D5CCC0;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B5AEA6;
+}
+
+/* Warm Gradient Glow & Border Accents */
+.glow-terracotta {
+  box-shadow: 0 4px 20px -2px rgba(200, 90, 50, 0.22);
+}
+
+.glow-terracotta-sm {
+  box-shadow: 0 2px 10px -1px rgba(200, 90, 50, 0.14);
+}
+
+.gradient-border-top {
+  position: relative;
+}
+.gradient-border-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #C85A32 0%, #D97706 50%, transparent 100%);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
