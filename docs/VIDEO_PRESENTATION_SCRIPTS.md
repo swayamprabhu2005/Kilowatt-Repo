@@ -51,58 +51,59 @@ This document contains word-for-word spoken scripts for both hackathon submissio
 ---
 
 ## Video 2: Video Presentation (Result Video)
-**Target Duration:** ~2:00 (approx. 275 words)  
-**Tone:** Results-driven, practical, demonstrating working execution  
-**Focus:** What was built, how it works, key results/benefits, challenges faced, and final impact  
+**Target Duration:** ~1:55 to 2:00 (approx. 265 words)  
+**Tone:** Results-driven, energetic, technically articulate, conversational  
+**Format:** Direct-to-camera presentation (talking head / personal video of yourself, NO screen recording required)  
+**Focus:** What was built during the hackathon, how the solution works, key results/benefits, challenges faced with local WordPress, and overall impact  
 
 ---
 
-### [0:00 – 0:25] What We Built During the Hackathon
-*(Screen sharing the live Orivanta PIM UI & Control Center)*
+### [0:00 – 0:25] Opening: What We Built During the Hackathon
+*(Direct eye contact with camera, warm welcoming smile, confident posture)*
 
-> "Welcome back. In this video, I'm excited to showcase the working results of **Orivanta PIM** built during this hackathon.
+> "Welcome back. In this video, I want to walk you through what we were able to build and achieve during this hackathon with **Orivanta PIM**.
 > 
-> We delivered a complete, end-to-end platform: an animated marketing home page, secure multi-tenant authentication, dynamic attribute builder, variable product matrix, and automated bi-directional synchronisation into a live WooCommerce store."
+> From a clean slate, we engineered a complete, production-ready Product Information Management platform: a responsive, beautifully styled web interface with tactile micro-animations, multi-tenant workspace isolation, a dynamic attribute and variant engine, and live, bi-directional integration with WooCommerce."
 
 ---
 
 ### [0:25 – 0:55] How the Solution Works in Practice
-*(Show screen action: product catalogue, sync button, and WooCommerce admin)*
+*(Conversational, using natural hand gestures to explain the flow)*
 
-> "Here is how the workflow operates:
-> First, an administrator defines custom product attributes—like switch types or finishes. When creating a variable product, Orivanta automatically computes the variant matrix with unique SKUs and stock quantities.
+> "To understand how the solution operates: A merchant begins by defining dynamic, typed attributes—such as materials, dimensions, or switch types. When creating a variable product, Orivanta automatically computes the entire variant matrix, generating unique SKUs, pricing overrides, and inventory levels.
 > 
-> Before publishing, our **Gemini 2.5 Flash agent** executes a bounded completeness audit. Once approved, the operator triggers synchronisation. Our idempotent sync engine validates the payload, calls the WooCommerce REST API v3, and locks the returned external ID in our local SQLite database. In our live test store, all 6 curated products and variations appeared instantly in WooCommerce!"
+> Before publishing, our integrated **Google Gemini 2.5 Flash agent** conducts a bounded completeness audit, flagging missing descriptions or SEO gaps. Once validated, our idempotent synchronisation engine pushes the catalogue directly to the WooCommerce REST API v3 and permanently maps the returned IDs in our local database."
 
 ---
 
-### [0:55 – 1:30] Key Challenges Overcome
-*(Honest, insightful engineering breakdown)*
+### [0:55 – 1:30] Engineering Challenges Faced with Local WordPress
+*(Thoughtful, authentic engineering breakdown, leaning slightly in)*
 
-> "Building this entirely locally under ₹0 budget presented real challenges:
-> - First, integrating with a local WordPress environment over self-signed SSL required handling strict TLS handshakes and Basic Auth constraints cleanly on the Node server.
-> - Second, WordPress's remote image sideloading initially rejected URLs without clean extensions. We engineered a resilient fallback mechanism that guarantees product structures, pricing, and variant hierarchies sync flawlessly.
-> - Third, because SQLite lacks PostgreSQL Row-Level Security, we enforced strict application-layer tenant isolation across every single query."
-
----
-
-### [1:30 – 2:00] Key Results & Potential Impact
-*(Show verified test results & final summary)*
-
-> "The results speak for themselves:
-> - **16 automated test suites** passing with 100% success rate.
-> - 6 live products, 5 categories, and multi-attribute variations verified in WooCommerce.
-> - Zero cloud hosting costs, zero secrets leaked, and an offline mock adapter that lets evaluators test the platform immediately.
+> "Building this live during the hackathon under a strict ₹0 budget presented very real challenges:
 > 
-> Orivanta PIM proves that with thoughtful software architecture, local SQLite persistence, and bounded agentic AI, you can deliver an enterprise-grade retail platform with zero infrastructure overhead. Thank you!"
+> - First, integrating with a local WordPress instance over self-signed SSL triggered strict TLS rejection. We resolved this by engineering custom local certificate handling and secure authentication handshakes in Node.js.
+> - Second, WordPress's media sideloading frequently rejected remote image URLs without file extensions. We built a resilient fallback pipeline ensuring product hierarchies, variations, and pricing sync with 100% reliability even if external asset endpoints fail.
+> - Third, because SQLite lacks native database-level multi-tenancy, we enforced rigorous application-layer tenant isolation across every single repository query."
 
 ---
 
-## Presentation Checklist & Tips
+### [1:30 – 1:55] Key Results, Benefits, and Overall Impact
+*(Confident, high-energy closing statement into camera)*
 
-- [ ] **Camera Setup**: Eye level, warm natural lighting, quiet environment.
-- [ ] **Pacing**: Speak deliberately at ~135 words per minute. Pause for 1 second between bullet points.
-- [ ] **Screen Demo for Video 2**:
-  - Open `http://localhost:3000` (Home page & Control Center).
-  - Open `https://kilowatt-repo.local/wp-admin/edit.php?post_type=product` (Live WooCommerce products tab).
-  - Show the terminal or test output (`16 passed`).
+> "Despite these hurdles, the project achieved its core mission and delivered tangible results:
+> 
+> We have **16 automated test suites** passing with a 100% success rate, a live WooCommerce store populated with real multi-variant products, and zero cloud hosting overhead.
+> 
+> Orivanta PIM proves that with smart architecture, local SQLite persistence, and bounded AI assistance, independent merchants can operate an enterprise-grade product information engine completely offline, eliminating expensive SaaS lock-in. 
+> 
+> Thank you!"
+
+---
+
+## Direct-to-Camera Presentation Tips
+
+- **Eye Line**: Look directly at the camera lens (not at your preview screen or monitor) so the evaluators feel immediate personal engagement.
+- **Body Language**: Keep your shoulders open, sit or stand tall, and use natural hand gestures when explaining the 3-step workflow and the 3 challenges.
+- **Pacing**: Speak deliberately at ~130–135 words per minute. Take a micro-pause (1 breath) between each challenge and result bullet so key achievements register clearly.
+- **Lighting**: Face a window or soft desk lamp to ensure your face is evenly lit with clear audio.
+
