@@ -2,6 +2,8 @@
 
 > **A modern, offline-first Product Information Management platform integrated with WooCommerce, backed by local SQLite persistence and powered by server-side Gemini Agentic AI.**
 
+**Video Presentation** -> [https://drive.google.com/drive/folders/1e5OQ_1K1PopnYWMXpCh0hcZe_ZailKoH](https://drive.google.com/drive/folders/1e5OQ_1K1PopnYWMXpCh0hcZe_ZailKoH)
+
 ---
 
 ## Table of Contents
@@ -349,6 +351,7 @@ orivanta-pim/
 - [`docs/SECURITY.md`](file:///d:/MyFiles/Kilowatt-Repo/docs/SECURITY.md) — Application-layer tenant isolation and secret redaction.
 - [`docs/DEMO_SCRIPT.md`](file:///d:/MyFiles/Kilowatt-Repo/docs/DEMO_SCRIPT.md) — Step-by-step hackathon presentation script.
 - [`docs/AI_AGENT_DEMO.md`](file:///d:/MyFiles/Kilowatt-Repo/docs/AI_AGENT_DEMO.md) — Reproducible walkthrough of the 4 agentic AI workflows.
+- [`docs/VIDEO_PRESENTATION_SCRIPTS.md`](file:///d:/MyFiles/Kilowatt-Repo/docs/VIDEO_PRESENTATION_SCRIPTS.md) — Spoken scripts for Video 1 (Planning) and Video 2 (Results), and [Drive Link](https://drive.google.com/drive/folders/1e5OQ_1K1PopnYWMXpCh0hcZe_ZailKoH).
 
 ---
 

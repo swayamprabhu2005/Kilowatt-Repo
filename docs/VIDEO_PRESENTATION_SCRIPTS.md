@@ -2,6 +2,8 @@
 
 This document contains word-for-word spoken scripts for both hackathon submission videos. Each script is tailored for a natural, confident speaking pace (130–140 words per minute) to land precisely within the **1.5 to 2-minute mark** (combined total under 4 minutes).
 
+**Submission Video Drive Link:** [https://drive.google.com/drive/folders/1e5OQ_1K1PopnYWMXpCh0hcZe_ZailKoH](https://drive.google.com/drive/folders/1e5OQ_1K1PopnYWMXpCh0hcZe_ZailKoH)
+
 ---
 
 ## Video 1: Video Presentation (Planning Video)
