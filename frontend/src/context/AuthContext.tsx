@@ -20,6 +20,7 @@ interface AuthContextType {
   workspaces: Workspace[];
   isLoading: boolean;
   login: (email: string, passwordPlain: string) => Promise<void>;
+  register: (name: string, email: string, passwordPlain: string, workspaceName?: string) => Promise<void>;
   logout: () => Promise<void>;
   switchWorkspace: (workspaceId: string) => Promise<void>;
 }
@@ -61,6 +62,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refreshProfile();
   };
 
+  const register = async (name: string, email: string, passwordPlain: string, workspaceName?: string) => {
+    const res = await apiFetch<any>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password: passwordPlain, workspaceName }),
+    });
+    setUser(res.user);
+    setActiveWorkspace(res.activeWorkspace);
+    await refreshProfile();
+  };
+
   const logout = async () => {
     try {
       await apiFetch('/auth/logout', { method: 'POST' });
@@ -80,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, activeWorkspace, workspaces, isLoading, login, logout, switchWorkspace }}>
+    <AuthContext.Provider value={{ user, activeWorkspace, workspaces, isLoading, login, register, logout, switchWorkspace }}>
       {children}
     </AuthContext.Provider>
   );

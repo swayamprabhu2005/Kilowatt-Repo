@@ -3,7 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppLayout } from './components/layout/AppLayout';
+import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
+import { SignUpPage } from './pages/SignUpPage';
 import { OverviewPage } from './pages/OverviewPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { ProductEditorPage } from './pages/ProductEditorPage';
@@ -44,27 +46,34 @@ export const App: React.FC = () => {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Public Marketing & Auth Pages */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+
+            {/* Authenticated PIM Dashboard Routes */}
             <Route
-              path="/"
               element={
                 <ProtectedRoute>
                   <AppLayout />
                 </ProtectedRoute>
               }
             >
-              <Route index element={<OverviewPage />} />
-              <Route path="products" element={<ProductsPage />} />
-              <Route path="products/new" element={<ProductEditorPage />} />
-              <Route path="products/:id" element={<ProductEditorPage />} />
-              <Route path="attributes" element={<AttributesPage />} />
-              <Route path="categories" element={<CategoriesPage />} />
-              <Route path="sync" element={<SyncCenterPage />} />
-              <Route path="woocommerce" element={<WooCommercePage />} />
-              <Route path="ai-assistant" element={<AiAssistantPage />} />
-              <Route path="activity" element={<ActivityPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="/overview" element={<OverviewPage />} />
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/products/new" element={<ProductEditorPage />} />
+              <Route path="/products/:id" element={<ProductEditorPage />} />
+              <Route path="/attributes" element={<AttributesPage />} />
+              <Route path="/categories" element={<CategoriesPage />} />
+              <Route path="/sync" element={<SyncCenterPage />} />
+              <Route path="/woocommerce" element={<WooCommercePage />} />
+              <Route path="/ai-assistant" element={<AiAssistantPage />} />
+              <Route path="/activity" element={<ActivityPage />} />
             </Route>
+
+            {/* Fallback route */}
+            <Route path="/app" element={<Navigate to="/overview" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
