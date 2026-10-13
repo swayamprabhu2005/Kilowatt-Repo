@@ -5,6 +5,118 @@ import { sqlite } from '../../db/index.js';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export class AuthService {
+  static async register(name: string, email: string, passwordPlain: string, workspaceName?: string) {
+    const existing = sqlite.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase().trim());
+    if (existing) {
+      throw { statusCode: 409, code: 'USER_EXISTS', message: 'An account with this email address already exists.' };
+    }
+
+    const userId = 'usr_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+    const workspaceId = 'ws_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+    const memberId = 'mem_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+    const now = Date.now();
+
+    const passwordHash = await argon2.hash(passwordPlain, {
+      memoryCost: 65536,
+      timeCost: 3,
+      parallelism: 4,
+    });
+
+    const finalWorkspaceName = workspaceName?.trim() || `${name.trim()}'s Workspace`;
+    const workspaceSlug = finalWorkspaceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Math.floor(1000 + Math.random() * 9000);
+
+    const insertTransaction = sqlite.transaction(() => {
+      // 1. Create User
+      sqlite.prepare(`
+        INSERT INTO users (id, email, password_hash, name, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(userId, email.toLowerCase().trim(), passwordHash, name.trim(), now, now);
+
+      // 2. Create Workspace
+      sqlite.prepare(`
+        INSERT INTO workspaces (id, name, slug, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(workspaceId, finalWorkspaceName, workspaceSlug, now, now);
+
+      // 3. Add user as owner of workspace
+      sqlite.prepare(`
+        INSERT INTO workspace_members (id, workspace_id, user_id, role, created_at)
+        VALUES (?, ?, ?, 'owner', ?)
+      `).run(memberId, workspaceId, userId, now);
+
+      // 4. Initialize workspace integration in LIVE WooCommerce mode
+      sqlite.prepare(`
+        INSERT INTO workspace_integrations (workspace_id, integration_mode, store_url, consumer_key, consumer_secret, is_locked, created_at, updated_at)
+        VALUES (?, 'woocommerce', '', '', '', 0, ?, ?)
+      `).run(workspaceId, now, now);
+
+      // 5. Seed initial dynamic attributes for the new workspace
+      const defaultAttrs = [
+        { code: 'color', name: 'Color', dataType: 'select', isVariantParam: 1, optionsJson: JSON.stringify(['Obsidian Black', 'Warm Sand', 'Terracotta', 'Ivory White']) },
+        { code: 'material', name: 'Material', dataType: 'text', isVariantParam: 0, optionsJson: '[]' },
+        { code: 'dimensions', name: 'Dimensions (cm)', dataType: 'text', isVariantParam: 0, optionsJson: '[]' },
+      ];
+      for (const attr of defaultAttrs) {
+        sqlite.prepare(`
+          INSERT INTO attribute_definitions (
+            id, workspace_id, code, name, description, data_type,
+            is_required, is_filterable, is_variant_param, applicable_product_types,
+            options_json, validation_rules_json, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, 0, 1, ?, 'simple,variable', ?, '{}', ?, ?)
+        `).run(
+          'attr_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16),
+          workspaceId,
+          attr.code,
+          attr.name,
+          `Standard ${attr.name} attribute`,
+          attr.dataType,
+          attr.isVariantParam,
+          attr.optionsJson,
+          now,
+          now
+        );
+      }
+
+      // 6. Seed initial categories for the new workspace
+      const defaultCats = [
+        { name: 'Electronics & Gear', slug: 'electronics-gear' },
+        { name: 'Studio Accessories', slug: 'studio-accessories' },
+      ];
+      for (const cat of defaultCats) {
+        sqlite.prepare(`
+          INSERT INTO categories (id, workspace_id, name, slug, description, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).run(
+          'cat_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16),
+          workspaceId,
+          cat.name,
+          cat.slug,
+          `Default ${cat.name} category`,
+          now,
+          now
+        );
+      }
+
+      // 7. Generate secure session token and persist directly to database
+      const sessionToken = crypto.randomBytes(32).toString('hex');
+      const expiresAt = now + SESSION_TTL_MS;
+      sqlite.prepare(`
+        INSERT INTO sessions (id, user_id, active_workspace_id, expires_at, created_at)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(sessionToken, userId, workspaceId, expiresAt, now);
+
+      return {
+        token: sessionToken,
+        expiresAt,
+        user: { id: userId, email: email.toLowerCase().trim(), name: name.trim() },
+        activeWorkspace: { id: workspaceId, name: finalWorkspaceName, slug: workspaceSlug, role: 'owner' },
+        isNewRegistration: true,
+      };
+    });
+
+    return insertTransaction();
+  }
+
   static async login(email: string, passwordPlain: string) {
     const user = sqlite.prepare(`
       SELECT id, email, password_hash, name FROM users WHERE email = ?

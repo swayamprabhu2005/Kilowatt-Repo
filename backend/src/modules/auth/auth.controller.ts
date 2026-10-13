@@ -3,6 +3,13 @@ import { z } from 'zod';
 import { AuthService } from './auth.service.js';
 import type { AuthenticatedRequest } from '../../types/index.js';
 
+const registerSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  workspaceName: z.string().optional(),
+});
+
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -13,6 +20,29 @@ const switchWorkspaceSchema = z.object({
 });
 
 export class AuthController {
+  static async register(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { name, email, password, workspaceName } = registerSchema.parse(req.body);
+      const result = await AuthService.register(name, email, password, workspaceName);
+
+      const isSecure = process.env.COOKIE_SECURE === 'true' || process.env.NODE_ENV === 'production';
+      res.cookie('orivanta_session', result.token, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = loginSchema.parse(req.body);

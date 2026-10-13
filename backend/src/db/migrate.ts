@@ -189,6 +189,18 @@ export function runMigrations() {
       created_at INTEGER NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_ai_runs_workspace ON ai_agent_runs(workspace_id);
+
+    -- WORKSPACE INTEGRATIONS & CREDENTIAL LOCKING
+    CREATE TABLE IF NOT EXISTS workspace_integrations (
+      workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id) ON DELETE CASCADE,
+      integration_mode TEXT NOT NULL DEFAULT 'woocommerce',
+      store_url TEXT,
+      consumer_key TEXT,
+      consumer_secret TEXT,
+      is_locked INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
   `);
 
   console.log('[Migration] Database tables and indexes created successfully.');

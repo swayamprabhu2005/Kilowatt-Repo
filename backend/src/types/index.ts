@@ -8,7 +8,7 @@ export interface WorkspaceContext {
   userName: string;
 }
 
-export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request<Record<string, string>, any, any, any> {
   workspaceCtx?: WorkspaceContext;
   sessionToken?: string;
 }

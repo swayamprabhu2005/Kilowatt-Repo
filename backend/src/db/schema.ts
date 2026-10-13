@@ -238,3 +238,17 @@ export const aiAgentRuns = sqliteTable(
     wsIdx: index('idx_ai_runs_workspace').on(table.workspaceId),
   })
 );
+
+// -----------------------------------------------------------------------------
+// WORKSPACE INTEGRATIONS & CREDENTIAL LOCKING
+// -----------------------------------------------------------------------------
+export const workspaceIntegrations = sqliteTable('workspace_integrations', {
+  workspaceId: text('workspace_id').primaryKey().references(() => workspaces.id, { onDelete: 'cascade' }),
+  integrationMode: text('integration_mode').notNull().default('woocommerce'), // 'woocommerce', 'mock'
+  storeUrl: text('store_url'),
+  consumerKey: text('consumer_key'),
+  consumerSecret: text('consumer_secret'),
+  isLocked: integer('is_locked').notNull().default(0),
+  createdAt: integer('created_at').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+});

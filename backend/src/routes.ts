@@ -23,6 +23,7 @@ apiRouter.get('/health', (_req, res) => {
   });
 });
 
+apiRouter.post('/auth/register', AuthController.register);
 apiRouter.post('/auth/login', AuthController.login);
 apiRouter.post('/auth/logout', AuthController.logout);
 
@@ -74,6 +75,7 @@ protectedApi.delete('/attributes/:id', AttributeController.delete);
 // WooCommerce Integration & Synchronisation
 protectedApi.get('/integrations/woocommerce/status', SyncController.getStatus);
 protectedApi.post('/integrations/woocommerce/test', SyncController.testConnection);
+protectedApi.post('/integrations/woocommerce/lock-credentials', SyncController.lockCredentials);
 protectedApi.post('/sync/simulate-failure', SyncController.simulateFailure);
 protectedApi.post('/sync/products/:id', SyncController.syncProduct);
 protectedApi.post('/sync/bulk', SyncController.syncBulk);
